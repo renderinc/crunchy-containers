@@ -54,15 +54,18 @@ chown $UID:$UID $PGPASSFILE
 
 pg_basebackup \
 	--label=$BACKUP_LABEL \
-	--wal-method=fetch \
+	--wal-method=stream \
+	--format=tar \
 	--pgdata=$BACKUP_PATH \
 	--host=$BACKUP_HOST \
 	--port=$BACKUP_PORT \
 	--username=$BACKUP_USER
 
-chown -R $UID:$UID $BACKUP_PATH
+xz $BACKUP_PATH/*.tar
+
+chown $UID:$UID $BACKUP_PATH
 
 # Open up permissions for the OSE Dedicated random UID scenario
-chmod -R o+rx $BACKUP_PATH
+chmod o+r $BACKUP_PATH
 
 echo_info "Backup has completed."
