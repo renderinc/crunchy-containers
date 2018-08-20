@@ -52,9 +52,13 @@ chmod 600 $PGPASSFILE
 
 chown $UID:$UID $PGPASSFILE
 
-# cat $PGPASSFILE
-
-pg_basebackup --label=$BACKUP_LABEL -X fetch --pgdata $BACKUP_PATH --host=$BACKUP_HOST --port=$BACKUP_PORT -U $BACKUP_USER
+pg_basebackup \
+	--label=$BACKUP_LABEL \
+	--wal-method=fetch \
+	--pgdata=$BACKUP_PATH \
+	--host=$BACKUP_HOST \
+	--port=$BACKUP_PORT \
+	--username=$BACKUP_USER
 
 chown -R $UID:$UID $BACKUP_PATH
 
