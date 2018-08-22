@@ -24,6 +24,7 @@
 # $BACKUP_USER pg user we are connecting with
 # $BACKUP_PASS pg user password we are connecting with
 # $BACKUP_PORT pg port we are connecting to
+# $MAX_BACKUPS max number of backups, after which earlier backups will be deleted
 
 source /opt/cpm/bin/common_lib.sh
 enable_debugging
@@ -52,13 +53,27 @@ chmod 600 $PGPASSFILE
 
 chown $UID:$UID $PGPASSFILE
 
-# cat $PGPASSFILE
+pg_basebackup \
+	--label=$BACKUP_LABEL \
+	--wal-method=stream \
+	--format=tar \
+	--pgdata=$BACKUP_PATH \
+	--host=$BACKUP_HOST \
+	--port=$BACKUP_PORT \
+	--username=$BACKUP_USER
 
-pg_basebackup --label=$BACKUP_LABEL -X fetch --pgdata $BACKUP_PATH --host=$BACKUP_HOST --port=$BACKUP_PORT -U $BACKUP_USER
+xz $BACKUP_PATH/*.tar
 
-chown -R $UID:$UID $BACKUP_PATH
+chown $UID:$UID $BACKUP_PATH
 
 # Open up permissions for the OSE Dedicated random UID scenario
-chmod -R o+rx $BACKUP_PATH
+chmod o+r $BACKUP_PATH
+
+if [[ -n "$MAX_BACKUPS" && "$MAX_BACKUPS" -gt 0 ]]; then
+	ls -t1 $BACKUPBASE | tail -n+$((MAX_BACKUPS + 1)) |
+		while IFS='' read -r file; do
+			rm -rvf "$BACKUPBASE/$file"
+		done
+fi
 
 echo_info "Backup has completed."
