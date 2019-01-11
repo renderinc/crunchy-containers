@@ -1,8 +1,5 @@
 FROM centos:7
 
-ARG GIT_REPO
-ARG GIT_REVISION
-
 LABEL name="crunchydata/backup" \
 	vendor="crunchy data" \
 	PostgresVersion="10" \
@@ -16,8 +13,6 @@ LABEL name="crunchydata/backup" \
 	io.k8s.display-name="Crunchy backup container" \
 	io.openshift.expose-services="" \
 	io.openshift.tags="crunchy,database" \
-	git.revision=${GIT_REVISION} \
-	git.repo=${GIT_REPO}
 
 ENV PGVERSION="10" PGDG_REPO="pgdg-centos10-10-2.noarch.rpm"
 
