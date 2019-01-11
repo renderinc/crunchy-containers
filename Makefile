@@ -41,13 +41,7 @@ backrestrestore: versiontest
 	docker tag crunchy-backrest-restore $(CCP_IMAGE_PREFIX)/crunchy-backrest-restore:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
 
 backup:	versiontest
-	docker build \
-		-t crunchy-backup:latest \
-		-t crunchy-backup:$$(git rev-parse --short HEAD) \
-		--build-arg GIT_REPO=$$(git remote get-url origin) \
-		--build-arg GIT_REVISION=$$(git rev-parse HEAD) \
-		-f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.backup.$(CCP_BASEOS) \
-		.
+	docker build -t crunchy-backup -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.backup.$(CCP_BASEOS) .
 	docker tag crunchy-backup $(CCP_IMAGE_PREFIX)/crunchy-backup:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
 
 collect: versiontest
