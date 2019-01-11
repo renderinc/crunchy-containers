@@ -25,10 +25,12 @@
 # $BACKUP_PASS pg user password we are connecting with
 # $BACKUP_PORT pg port we are connecting to
 # $MAX_BACKUPS max number of backups, after which earlier backups will be deleted
+# $BACKUP_OPTS extra backup options to be passed to pg_basebackup
+
+set -e
 
 source /opt/cpm/bin/common_lib.sh
 enable_debugging
-ose_hack
 
 BACKUPBASE=/pgdata/$BACKUP_HOST-backups
 if [ ! -d "$BACKUPBASE" ]; then
@@ -44,6 +46,7 @@ BACKUP_PATH=$BACKUPBASE/$TS
 mkdir $BACKUP_PATH
 
 echo_info "BACKUP_PATH is set to ${BACKUP_PATH}."
+echo_info "BACKUP_OPTS is set to ${BACKUP_OPTS}."
 
 export PGPASSFILE=/tmp/pgpass
 
@@ -51,7 +54,7 @@ echo "*:*:*:"$BACKUP_USER":"$BACKUP_PASS  >> $PGPASSFILE
 
 chmod 600 $PGPASSFILE
 
-chown $UID:$UID $PGPASSFILE
+# chown $UID:$UID $PGPASSFILE
 
 pg_basebackup \
 	--label=$BACKUP_LABEL \
@@ -60,14 +63,15 @@ pg_basebackup \
 	--pgdata=$BACKUP_PATH \
 	--host=$BACKUP_HOST \
 	--port=$BACKUP_PORT \
-	--username=$BACKUP_USER
+	--username=$BACKUP_USER \
+	$BACKUP_OPTS
 
 xz $BACKUP_PATH/*.tar
 
 chown $UID:$UID $BACKUP_PATH
 
 # Open up permissions for the OSE Dedicated random UID scenario
-chmod o+r $BACKUP_PATH
+chmod -R o+rx $BACKUP_PATH
 
 if [[ -n "$MAX_BACKUPS" && "$MAX_BACKUPS" -gt 0 ]]; then
 	ls -t1 $BACKUPBASE | tail -n+$((MAX_BACKUPS + 1)) |
