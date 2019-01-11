@@ -1,0 +1,3 @@
+[submodule "tools/pgmonitor"]
+	path = tools/pgmonitor
+	url = https://github.com/CrunchyData/pgmonitor.git
