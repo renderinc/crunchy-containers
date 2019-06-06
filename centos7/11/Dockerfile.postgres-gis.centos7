@@ -18,19 +18,54 @@ ENV PGVERSION="11" PGDG_REPO="pgdg-centos11-11-2.noarch.rpm"
 
 RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/${PGVERSION}/redhat/rhel-7-x86_64/${PGDG_REPO}
 
-RUN yum -y update && yum -y install epel-release \
- && yum -y update glibc-common \
- && yum -y install bind-utils \
-    gettext \
-    hostname \
-    procps-ng  \
-    rsync \
- && yum -y install postgresql11-server postgresql11-contrib postgresql11 \
-    R-core libRmath plr11 \
-    pgaudit13_11 \
-    pgbackrest \
-    postgis24_11 postgis24_11-client \
- && yum -y clean all
+RUN yum -y update \
+	&& yum -y install \
+		epel-release \
+		centos-release-scl \
+	&& yum -y update glibc-common \
+	&& yum -y install \
+		bind-utils \
+		gettext \
+		hostname \
+		pgaudit13_11 \
+		pgbackrest \
+		postgresql11 \
+		postgresql11-contrib \
+		postgresql11-server \
+		procps-ng
+
+ENV PATH=/usr/pgsql-11/bin:/usr/geos37/bin:$PATH
+
+RUN yum -y install \
+		devtoolset-7 \
+		gdal-devel \
+		geos-devel \
+		libxml2-devel \
+		llvm-toolset-7 \
+		llvm5.0 \
+		postgresql11-devel \
+		proj49-devel \
+	&& mkdir /postgis \
+	&& cd /postgis \
+	&& curl -O https://download.osgeo.org/postgis/source/postgis-2.5.2.tar.gz \
+	&& tar -xvf postgis-2.5.2.tar.gz \
+	&& cd postgis-2.5.2 \
+	&& ./autogen.sh \
+	&& ./configure --with-projdir=/usr/proj49 \
+	&& make -j$(nproc) \
+	&& make install \
+	&& cd / \
+	&& rm -rf /postgis \
+	&& yum -y remove \
+		devtoolset-7 \
+		gdal-devel \
+		geos-devel \
+		libxml2-devel \
+		llvm-toolset-7 \
+		llvm5.0 \
+		postgresql11-devel \
+		proj49-devel \
+	&& yum -y clean all
 
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
 
