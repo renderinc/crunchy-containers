@@ -1,18 +1,19 @@
 FROM centos:7
 
-LABEL name="crunchydata/postgres-gis" \
-        vendor="crunchy data" \
+LABEL \
+	name="crunchydata/postgres-gis" \
+	vendor="crunchy data" \
 	PostgresVersion="11" \
 	PostgresFullVersion="11.1" \
 	Version="7.6" \
 	Release="2.2.0" \
-        url="https://crunchydata.com" \
-        summary="Includes PostGIS extensions on top of crunchy-postgres" \
-        description="An identical image of crunchy-postgres with the extra PostGIS packages added for users that require PostGIS." \
-        io.k8s.description="postgres-gis container" \
-        io.k8s.display-name="Crunchy postgres-gis container" \
-        io.openshift.expose-services="" \
-        io.openshift.tags="crunchy,database"
+	url="https://crunchydata.com" \
+	summary="Includes PostGIS extensions on top of crunchy-postgres" \
+	description="An identical image of crunchy-postgres with the extra PostGIS packages added for users that require PostGIS." \
+	io.k8s.description="postgres-gis container" \
+	io.k8s.display-name="Crunchy postgres-gis container" \
+	io.openshift.expose-services="" \
+	io.openshift.tags="crunchy,database"
 
 ENV PGVERSION="11" PGDG_REPO="pgdg-centos11-11-2.noarch.rpm"
 
@@ -46,16 +47,28 @@ RUN yum -y install \
 		postgresql11-devel \
 		proj49-devel \
 	&& mkdir /postgis \
-	&& cd /postgis \
-	&& curl -O https://download.osgeo.org/postgis/source/postgis-2.5.2.tar.gz \
-	&& tar -xvf postgis-2.5.2.tar.gz \
-	&& cd postgis-2.5.2 \
-	&& ./autogen.sh \
-	&& ./configure --with-projdir=/usr/proj49 \
-	&& make -j$(nproc) \
-	&& make install \
-	&& cd / \
+	&& ( \
+		cd /postgis \
+		&& curl -sSL -O https://download.osgeo.org/postgis/source/postgis-2.5.2.tar.gz \
+		&& sha256sum -c - <<< "b6cb286c5016029d984f8c440947bf9178da72e1f6f840ed639270e1c451db5e	 postgis-2.5.2.tar.gz" \
+		&& tar -xvf postgis-2.5.2.tar.gz \
+		&& cd postgis-2.5.2 \
+		&& ./autogen.sh \
+		&& ./configure --with-projdir=/usr/proj49 \
+		&& make -j$(nproc) \
+		&& make install \
+	) \
 	&& rm -rf /postgis \
+	&& mkdir -p /pg_similarity/src \
+	&& ( \
+		cd /pg_similarity \
+		&& curl -sSL -o pg_similarity.tar.gz https://github.com/eulerto/pg_similarity/archive/pg_similarity_1_0.tar.gz \
+		&& sha256sum -c - <<< "0d74e5c6ba3dd753da8bb55293ebb0f05484eab342af5c2ee1fd03a1cd876276	 pg_similarity.tar.gz" \
+		&& tar -xf pg_similarity.tar.gz --strip-components=1 -C src \
+		&& cd ./src \
+		&& USE_PGXS=1 make -j$(nproc) install \
+	) \
+	&& rm -rf /pg_similarity \
 	&& yum -y remove \
 		devtoolset-7 \
 		gdal-devel \
