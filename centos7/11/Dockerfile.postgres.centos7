@@ -18,6 +18,8 @@ ENV PGVERSION="11" PGDG_REPO="pgdg-centos11-11-2.noarch.rpm"
 
 RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/${PGVERSION}/redhat/rhel-7-x86_64/${PGDG_REPO}
 
+ADD ./centos7/11/extras/timescale_timescaledb.repo /etc/yum.repos.d/timescale_timescaledb.repo
+
 RUN yum -y update \
  && yum -y install epel-release \
  && yum -y update glibc-common \
@@ -29,6 +31,7 @@ RUN yum -y update \
  && yum -y install postgresql11-server postgresql11-contrib postgresql11 \
     pgaudit13_11 \
     pgbackrest \
+ && yum install -y timescaledb-postgresql-11 \
  && yum -y clean all
 
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
