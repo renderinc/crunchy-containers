@@ -32,7 +32,7 @@ RUN yum -y update \
     pgaudit13_11 \
     pgbackrest \
  && yum -y install timescaledb-postgresql-11 \
- && yum -y install openssl
+ && yum -y install openssl \
  && yum -y clean all
 
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
