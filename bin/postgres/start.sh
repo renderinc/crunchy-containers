@@ -287,6 +287,7 @@ function initialize_replica() {
     sed -i "s/PG_PRIMARY_PORT/$PG_PRIMARY_PORT/g" /tmp/pgrepl-recovery.conf
     sed -i "s/APPLICATION_NAME/$APPLICATION_NAME/g" /tmp/pgrepl-recovery.conf
     cp /tmp/pgrepl-recovery.conf $PGDATA/recovery.conf
+    source /opt/cpm/bin/custom-config.sh
 }
 
 # Function to create the database if the PGDATA folder is empty, or do nothing if PGDATA
@@ -349,6 +350,7 @@ function initialize_primary() {
         if [[ -v SYNC_REPLICA ]]; then
             echo "Synchronous_standby_names = '"$SYNC_REPLICA"'" >> $PGDATA/postgresql.conf
         fi
+        source /opt/cpm/bin/custom-configs.sh
     else
         echo_info "PGDATA already contains a database."
     fi
@@ -399,7 +401,6 @@ case "$PG_MODE" in
 esac
 
 source /opt/cpm/bin/pgbackrest.sh
-source /opt/cpm/bin/custom-configs.sh
 
 # Run pre-start hook if it exists
 if [ -f /pgconf/pre-start-hook.sh ]
