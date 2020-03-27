@@ -305,13 +305,11 @@ function initialize_primary() {
         echo "Starting database.." >> /tmp/start-db.log
 
         echo_info "Temporarily starting database to run setup.sql.."
-        pg_ctl -D $PGDATA start
+        pg_ctl -o '-h ""' -D $PGDATA start
 
         echo_info "Waiting for PostgreSQL to start.."
         while true; do
             pg_isready \
-            --port=$PG_PRIMARY_PORT \
-            --host=$HOSTNAME \
             --username=$PG_PRIMARY_USER \
             --timeout=2
             if [ $? -eq 0 ]; then
