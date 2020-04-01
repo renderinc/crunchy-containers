@@ -101,7 +101,7 @@ RUN yum -y install \
 		cd /pg_similarity \
 		&& curl -sSL -o pg_similarity.tar.gz https://github.com/eulerto/pg_similarity/archive/pg_similarity_1_0.tar.gz \
 		&& sha512sum -c - <<< '919e65d6fa88026a7e994f3e89fd89db55a85abd68de5823a220841a3cd5167d1174a2f009fe126b039beea96b13ac3e29e3ab3f0682607a4995bf6c7921cf06  pg_similarity.tar.gz' \
-		&& tar -xf pg_similarity.tar.gz --strip-components=1 -C src \
+		&& tar -xvf pg_similarity.tar.gz --strip-components=1 -C src \
 		&& cd ./src \
 		&& USE_PGXS=1 make -j$(nproc) install \
 	) \
