@@ -107,9 +107,14 @@ RUN yum -y install \
 	) \
 	&& rm -rf /pg_similarity \
 	&& yum -y remove \
+		autoconf \
+		automake \
 		devtoolset-7 \
+		file \
+		gcc-c++ \
 		gdal-devel \
 		geos-devel \
+		libtool \
 		libxml2-devel \
 		llvm-toolset-7 \
 		llvm5.0 \
