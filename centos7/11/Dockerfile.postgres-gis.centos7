@@ -39,22 +39,56 @@ RUN yum -y update \
 		timescaledb-postgresql-11 \
 		openssl
 
-ENV PATH=/usr/pgsql-11/bin:/usr/geos37/bin:$PATH
+ENV PATH=/usr/pgsql-11/bin:/usr/geos37/bin:$PATH \
+	PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 
 RUN yum -y install \
+		autoconf \
+		automake \
 		devtoolset-7 \
+		file \
 		gdal-devel \
 		geos-devel \
+		gcc-c++ \
+		git \
+		libtool \
 		libxml2-devel \
 		llvm-toolset-7 \
 		llvm5.0 \
 		postgresql11-devel \
 		proj49-devel \
+	&& echo /usr/local/lib > /etc/ld.so.conf.d/local.conf \
+	&& mkdir -p /protobuf/ \
+	&& ( \
+		cd /protobuf/ \
+		&& curl -sSL -o src.tar.gz https://github.com/protocolbuffers/protobuf/archive/v3.11.4.tar.gz \
+		&& sha512sum -c <<< '777bbb0e9e2375eaebe6b8c87abd660bac70ee469c9ad00dd25917b82d7fb5bbe33cf87f0d69c90e19d55c07a7285ec20974ba4768623ce9ccfadf147fd5e261  src.tar.gz' \
+		&& tar --strip-components=1 -xvf src.tar.gz \
+		&& ./autogen.sh \
+		&& ./configure \
+		&& make -j$(nproc) \
+		&& make install \
+		&& ldconfig \
+	) \
+	&& rm -rf /protobuf/ \
+	&& mkdir -p /protobuf-c/ \
+	&& ( \
+		cd /protobuf-c/ \
+		&& curl -sSL -o src.tar.gz https://github.com/protobuf-c/protobuf-c/archive/v1.3.3.tar.gz \
+		&& sha512sum -c <<< '237b6e6df6ebf4e62a1d402053182f1224c0f35656f30d8fb55ac79945d3d1acf264a7da9f100c1836b90c4acfc1fd96e9a5a95cb47a77d0ddf043aacc99f359  src.tar.gz' \
+&& tar --strip-components=1 -xvf src.tar.gz \
+		&& ./autogen.sh \
+		&& ./configure \
+		&& make -j$(nproc) \
+		&& make install \
+		&& ldconfig \
+	) \
+	&& rm -rf /protobuf-c/ \
 	&& mkdir /postgis \
 	&& ( \
 		cd /postgis \
-		&& curl -sSL -O https://download.osgeo.org/postgis/source/postgis-2.5.2.tar.gz \
-		&& sha256sum -c - <<< "b6cb286c5016029d984f8c440947bf9178da72e1f6f840ed639270e1c451db5e	 postgis-2.5.2.tar.gz" \
+		&& curl -sSLO https://download.osgeo.org/postgis/source/postgis-2.5.2.tar.gz \
+		&& sha512sum -c - <<< 'b10781f0b74bad8162c33eb111a6090fba184b45fe5874d22cd3a5b0acfb057f3407c073bc44c9d4cd20ed8c2cb1fbb34480b0cf331340bc8b52580d4eccb819  postgis-2.5.2.tar.gz' \
 		&& tar -xvf postgis-2.5.2.tar.gz \
 		&& cd postgis-2.5.2 \
 		&& ./autogen.sh \
@@ -67,7 +101,7 @@ RUN yum -y install \
 	&& ( \
 		cd /pg_similarity \
 		&& curl -sSL -o pg_similarity.tar.gz https://github.com/eulerto/pg_similarity/archive/pg_similarity_1_0.tar.gz \
-		&& sha256sum -c - <<< "0d74e5c6ba3dd753da8bb55293ebb0f05484eab342af5c2ee1fd03a1cd876276	 pg_similarity.tar.gz" \
+		&& sha512sum -c - <<< '919e65d6fa88026a7e994f3e89fd89db55a85abd68de5823a220841a3cd5167d1174a2f009fe126b039beea96b13ac3e29e3ab3f0682607a4995bf6c7921cf06  pg_similarity.tar.gz' \
 		&& tar -xf pg_similarity.tar.gz --strip-components=1 -C src \
 		&& cd ./src \
 		&& USE_PGXS=1 make -j$(nproc) install \
