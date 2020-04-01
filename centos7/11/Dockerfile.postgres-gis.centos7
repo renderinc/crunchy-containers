@@ -75,7 +75,7 @@ RUN yum -y install \
 		cd /protobuf-c/ \
 		&& curl -sSL -o src.tar.gz https://github.com/protobuf-c/protobuf-c/archive/v1.3.3.tar.gz \
 		&& sha512sum -c <<< '237b6e6df6ebf4e62a1d402053182f1224c0f35656f30d8fb55ac79945d3d1acf264a7da9f100c1836b90c4acfc1fd96e9a5a95cb47a77d0ddf043aacc99f359  src.tar.gz' \
-&& tar --strip-components=1 -xvf src.tar.gz \
+		&& tar --strip-components=1 -xvf src.tar.gz \
 		&& ./autogen.sh \
 		&& ./configure \
 		&& make -j$(nproc) \
