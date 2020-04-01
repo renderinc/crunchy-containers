@@ -47,10 +47,9 @@ RUN yum -y install \
 		automake \
 		devtoolset-7 \
 		file \
+		gcc-c++ \
 		gdal-devel \
 		geos-devel \
-		gcc-c++ \
-		git \
 		libtool \
 		libxml2-devel \
 		llvm-toolset-7 \
