@@ -30,6 +30,7 @@ RUN yum -y update \
 		bind-utils \
 		gettext \
 		hostname \
+		json-c \
 		pgaudit13_11 \
 		pgbackrest \
 		postgresql11 \
@@ -50,6 +51,7 @@ RUN yum -y install \
 		gcc-c++ \
 		gdal-devel \
 		geos-devel \
+		json-c-devel \
 		libtool \
 		libxml2-devel \
 		llvm-toolset-7 \
@@ -114,6 +116,7 @@ RUN yum -y install \
 		gcc-c++ \
 		gdal-devel \
 		geos-devel \
+		json-c-devel \
 		libtool \
 		libxml2-devel \
 		llvm-toolset-7 \
