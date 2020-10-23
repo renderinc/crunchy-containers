@@ -17,7 +17,7 @@ LABEL \
 
 ENV PGVERSION="11" PGDG_REPO="pgdg-centos11-11-2.noarch.rpm"
 
-RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/${PGVERSION}/redhat/rhel-7-x86_64/${PGDG_REPO}
+RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 
 ADD ./centos7/11/extras/timescale_timescaledb.repo /etc/yum.repos.d/timescale_timescaledb.repo
 
@@ -55,7 +55,7 @@ RUN yum -y install \
 		llvm-toolset-7 \
 		llvm5.0 \
 		postgresql11-devel \
-		proj49-devel \
+		proj-devel \
 	&& echo /usr/local/lib > /etc/ld.so.conf.d/local.conf \
 	&& mkdir -p /protobuf/ \
 	&& ( \
@@ -91,7 +91,7 @@ RUN yum -y install \
 		&& tar -xvf postgis-2.5.2.tar.gz \
 		&& cd postgis-2.5.2 \
 		&& ./autogen.sh \
-		&& ./configure --with-projdir=/usr/proj49 \
+		&& ./configure \
 		&& make -j$(nproc) \
 		&& make install \
 	) \
@@ -119,7 +119,7 @@ RUN yum -y install \
 		llvm-toolset-7 \
 		llvm5.0 \
 		postgresql11-devel \
-		proj49-devel \
+		proj-devel \
 	&& yum -y clean all
 
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
