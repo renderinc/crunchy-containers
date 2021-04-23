@@ -37,7 +37,7 @@ RUN yum -y update \
 		postgresql11-contrib \
 		postgresql11-server \
 		procps-ng \
-		timescaledb-postgresql-11 \
+		timescaledb-postgresql-11-1.7.5 \
 		openssl
 
 ENV PATH=/usr/pgsql-11/bin:/usr/geos37/bin:$PATH \
