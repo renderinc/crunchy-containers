@@ -286,7 +286,8 @@ function initialize_replica() {
     sed -i "s/PG_PRIMARY_HOST/$PG_PRIMARY_HOST/g" /tmp/pgrepl-recovery.conf
     sed -i "s/PG_PRIMARY_PORT/$PG_PRIMARY_PORT/g" /tmp/pgrepl-recovery.conf
     sed -i "s/APPLICATION_NAME/$APPLICATION_NAME/g" /tmp/pgrepl-recovery.conf
-    cp /tmp/pgrepl-recovery.conf $PGDATA/recovery.conf
+    cat /tmp/pgrepl-recovery.conf >> $PGDATA/postgresql.conf
+    touch $PGDATA/standby.signal
     source /opt/cpm/bin/custom-config.sh
 }
 
